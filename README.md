@@ -1,62 +1,72 @@
-# Gustos y Bolichito
+# Juego con personajes y elementos
+ 
 
-Se nos pide armar un programa que ayude a entender qué cosas le gustan a distintas personas que pueden estar en un bolichito.
+Nos piden modelar un juego en el que cada jugador maneja un conjunto de personajes (p.ej. guerreros, trabajadores, sacerdotes). En el juego hay distintos elementos (p.ej. casas, animales, ríos). Cuando un personaje se encuentra con un elemento, hace cosas que pueden afectar a ambos.
+
+Como recién estamos empezando a aprender programación con objetos, vamos a modelar una situación muy reducida, en la que aparecen solamente estos objetos:
+
+- **luisa**, una _jugadora_,
+- **floki**, un _personaje_ guerrero,
+- **mario**, un _personaje_ trabajador,
+- **ballesta** y **jabalina**, dos _armas_. `floki` tiene una de estas armas.
+- **castillo**, **aurora** (que es una vaca) y **tipa** (que es un árbol), tres _elementos_. 
+
+De cada elemento nos va a interesar la _altura_. El `castillo` mide 20 metros de alto, `aurora` 1 metro, la `tipa` arranca en 8 metros pero puede crecer (ya veremos cómo).
+Además: debemos manejar el _nivel de defensa_ del `castillo` (un valor numérico que arranca en 150), y si `aurora` _está viva_ o no (nace viva).
 
 
-## Objetos y personas
+<br>
 
-Tener en cuenta a estas personas:
-- _Rosa_: le gustan las cosas que pesan 2 kilos (o sea 2000 gramos) o menos.
-- _Estefanía_: le gustan las cosas de colores fuertes.
-- _Luisa_: le gustan las cosas que sean de un material que brilla.
-- _Juan_: le gustan las cosas que, o bien son de un color que no es fuerte, o bien pesan entre 1200 y 1800 gramos.
+## Encuentro entre personaje y elemento. 
 
-Como **colores** contemplar (al menos) rojo, verde, celeste y pardo. 
-De estos, los dos primeros son fuertes, los otros no.
+El programa debe resolver el encuentro entre un personaje y un elemento.
 
-Como **materiales** tenemos: el cobre y el vidrio que brillan; el lino, la madera y el cuero que no.
+Para eso, tanto `floki` como `mario` implementan el método `encontrar(elemento)`.
+En el archivo `jugadoresPersonajes.wlk` hay una definición parcial de ambos personajes, que incluye este método en ambos casos. La de `mario` está incompleta, le falta una línea. 
 
-Finalmente, considerar (al menos) estos objetos:
-  - una _remera_ roja de lino, pesa 800 gramos.
-  - una _pelota_ parda de cuero, pesa 1300 gramos.
-  - una _biblioteca_ verde de madera, pesa 8000 gramos.
-  - un _muñeco_ celeste de vidrio, de peso variable.
-  - una _placa_ de cobre, de peso y color variables.
 
-**Algunos ejemplos concretos**
-- Entre los objetos que le gustan a _Rosa_ podemos encontrar: una _pelota_, una _remera_ o un _muñeco_ cuyo peso sea menor a 2000 gramos. En cambio la _biblioteca_ o una _placa_ de 3500 gramos no le gustarían.
-- A _Estefanía_ le gustaría una _placa_ roja de cualquier peso o la _biblioteca_, pero **no** le gusta: una _pelota_ parda de cuero ni un _muñeco_ celeste de vidrio.
-- A _Luisa_ en cambio le gustan objetos del tipo: una _placa_ de cobre, o un _muñeco_ de vidrio; pero no le gustaría la _remera_ ni la _pelota_.
-- _Juan_ tiene gustos combinados, le puede gustar: una _pelota_, un _muñeco_ celeste, o una _placa_ de cobre que pese 1500 gramos. No le gusta la _biblioteca_ ni la _remera_.
+<br> 
 
-## Bolichito
+### Floki 
 
-Agregar al modelo un bolichito, que vende dos objetos: uno está en la vidriera, otro está en el mostrador.
-Estos objetos van cambiando con el tiempo.
+En el método `encontrar(elemento)` de `floki` vemos que pasan dos cosas: el elemento recibe un ataque con un valor que es la potencia del arma, y el arma registra que ha sido usada. Hay una condición: que el arma esté cargada.
 
-El bolichito debe poder responder si es brillante o no. Eso depende de que los 2 objetos que tiene (uno en el mostrador y otro en la vidriera) sean ambos brillantes. 
+Veamos cómo debe reaccionar cada elemento al recibir un ataque:
+- El `castillo` disminuye su nivel de defensa en la potencia del ataque (p.ej. si recibe un ataque de 30, disminuye el nivel de defensa en 30). 
+- `aurora` muere si la potencia del ataque es 10 o más; si no, no le pasa nada. 
+- a `tipa` no le pasa nada.
 
-Otra cosa que nos debe poder decir es si es monocromático, lo cual será cierto si los 2 objetos que exhibe son del mismo color.
+A su vez, respecto de las armas tenemos estas definiciones respecto de la potencia, el uso, y cuándo se consideran cargadas.
+- La `ballesta` nace con 10 flechas. Cada vez que se usa, pierde una flecha. Está cargada si tiene flechas. Su potencia es 4.
+- La `jabalina` nace cargada. Se puede usar solamente una vez, o sea, con el primer uso deja de estar cargada. Su potencia es 30.
 
-Y también nos interesa saber si el bolichito está equilibrado, lo cual será verdadero si el objeto del mostrador pesa más que el de la vidriera.
 
-Debemos poder preguntarle al bolichito si tiene algún objeto exhibido de un determinado color y además, si puede mejorar, lo cual será cierto si está desequilibrado o es monocromático.
+<br> 
 
-Por último, tenemos que poder preguntarle si puede ofrecerle algo a una persona determinada que se pasa como argumento, lo cual será verdadero cuando alguno de los objetos exhibidos le gusta a esa persona. 
-  P.ej. si el bolichito tiene la remera en la vidriera y la pelota en el mostrador,
-  entonces puede ofrecerle algo a Estefanía (la remera) y a Juan (la pelota) 
-  pero no a Luisa (porque no le gustan ni la remera ni la pelota).
+### Mario
 
-  
-## Más cosas
+Pasemos ahora al método `encontrar(elemento)` de `mario`. 
+Hay dos cosas definidas y una que tenés que definir vos.
 
-Agregar al modelo estos objetos:
+Las dos cosas definidas son: el valor recolectado por `mario` aumenta en un valor que depende del elemento, y el elemento recibe el trabajo que hace `mario` sobre él.
 
-- un _arito_ celeste de cobre, que pesa 180 gramos.
-- un _banquito_ de madera que pesa 1700 gramos. 
-  Al principio es naranja, pero puede cambiar de color. 
-  El naranja es un color fuerte.
-- una _cajita_ roja de cobre, que tiene un objeto adentro. 
-  Este objeto puede ser cualquiera de los definidos previamente, y puede cambiar.
-  El peso de la cajita es de 400 gramos más el peso de lo que tiene adentro.
-    
+Veamos cómo es cada elemento respecto del valor y del trabajo:
+- El `castillo` otorga como valor el 20% de su defensa (o sea, su defensa / 5). 
+  Al recibir un trabajo, aumenta su defensa en 20, hasta un tope de 200. O sea, si tiene 192 no pasa a 212, queda en 200 (atención acá: se puede usar `min`).
+- `aurora` otorga como valor 15 unidades. Al recibir un trabajo, no le pasa nada.
+- La `tipa` otorga como valor el doble de su altura. Al recibir un trabajo, su altura crece en un metro (porque se supone que la riegan y le dan nitratos, ponele).
+
+Se le tiene que poder preguntar a `mario` si _es feliz_ o no. <br> 
+`mario` es feliz si: o bien recolectó en total al menos 50 unidades, o bien el último elemento con el que se encontró mide al menos 10 metros de alto.
+La acción que falta en el método `encontrar(elemento)` es necesaria para poder evaluar esta segunda condición.
+
+
+<br>
+
+## Luisa
+
+En cada momento del juego, `luisa` está manejando uno de sus personajes, es el _personaje activo_. En este modelo reducido, el personaje activo de `luisa` puede ser o bien `floki` o bien `mario`. 
+
+El objeto `luisa` debe entender el mensaje `aparece(elemento)`. 
+Cuando le llega este mensaje, `luisa` le dice a su personaje activo que encuentre al elemento. 
+Luisa no nace con ningún personaje activo, hay que asignarle uno.
